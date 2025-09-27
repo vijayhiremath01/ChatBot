@@ -1,0 +1,22 @@
+{
+  "name": "Chat",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Chat conversation title"
+    },
+    "last_message": {
+      "type": "string",
+      "description": "Preview of the last message"
+    },
+    "message_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of messages in this chat"
+    }
+  },
+  "required": [
+    "title"
+  ]
+}

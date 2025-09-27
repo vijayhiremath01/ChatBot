@@ -1,0 +1,157 @@
+import React, { useState } from 'react';
+import { ChatSidebar, SearchButton, MessageBubble, MessageInput } from './Components/chat';
+import { Message } from './entities/Message.js';
+import { Chat } from './entities/Chat.js';
+
+function App() {
+  const [selectedChatId, setSelectedChatId] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  const handleNewChat = async () => {
+    try {
+      const newChat = await Chat.create({ title: 'New Chat' });
+      setSelectedChatId(newChat.id);
+      setMessages([]);
+    } catch (error) {
+      console.error('Failed to create new chat:', error);
+    }
+  };
+
+  const handleChatSelect = async (chat) => {
+    if (chat) {
+      setSelectedChatId(chat.id);
+      try {
+        const chatMessages = await Message.list(chat.id);
+        setMessages(chatMessages);
+      } catch (error) {
+        console.error('Failed to load messages:', error);
+      }
+    } else {
+      setSelectedChatId(null);
+      setMessages([]);
+    }
+  };
+
+  const handleSendMessage = async (content) => {
+    if (!selectedChatId) return;
+
+    try {
+      setIsLoading(true);
+      
+      // Create user message
+      const userMessage = await Message.create({
+        chat_id: selectedChatId,
+        content,
+        role: 'user'
+      });
+      
+      setMessages(prev => [...prev, userMessage]);
+
+      // Simulate AI response
+      setTimeout(async () => {
+        const aiMessage = await Message.create({
+          chat_id: selectedChatId,
+          content: `This is a simulated response to: "${content}"`,
+          role: 'assistant'
+        });
+        
+        setMessages(prev => [...prev, aiMessage]);
+        
+        // Update chat with last message
+        await Chat.update(selectedChatId, { 
+          last_message: content,
+          message_count: messages.length + 2
+        });
+        
+        setIsLoading(false);
+      }, 1000);
+      
+    } catch (error) {
+      console.error('Failed to send message:', error);
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="app-container">
+      {/* Sidebar */}
+      {sidebarOpen && (
+        <ChatSidebar
+          selectedChatId={selectedChatId}
+          onChatSelect={handleChatSelect}
+          onNewChat={handleNewChat}
+          isOpen={sidebarOpen}
+          onClose={() => setSidebarOpen(false)}
+        />
+      )}
+
+      {/* Main Chat Area */}
+      <div className="app-main-area">
+        {/* Header */}
+        <div className="app-header">
+          <SearchButton onClick={() => setSidebarOpen(!sidebarOpen)} />
+          <div className="app-header-content">
+            <div className="app-header-avatar">AI</div>
+            <div>
+              <h1 className="app-header-title">znozx</h1>
+              <p className="app-header-subtitle">
+                {selectedChatId ? 'AI Assistant' : 'Select a chat to start'}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Messages */}
+        <div className="app-messages">
+          {messages.length === 0 ? (
+            <div className="app-empty-state">
+              <div className="app-empty-content">
+                <div className="app-empty-avatar">AI</div>
+                <h2 className="app-empty-title">How can I help you today?</h2>
+                <p className="app-empty-subtitle">
+                  Start a new conversation or select an existing chat from the sidebar.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="app-messages-container">
+              {messages.map((message) => (
+                <MessageBubble
+                  key={message.id}
+                  message={message}
+                  isUser={message.role === 'user'}
+                />
+              ))}
+              {isLoading && (
+                <div className="app-loading">
+                  <div className="app-loading-container">
+                    <div className="app-loading-avatar">AI</div>
+                    <div className="app-loading-bubble">
+                      <div className="app-loading-dots">
+                        <div className="app-loading-dot"></div>
+                        <div className="app-loading-dot"></div>
+                        <div className="app-loading-dot"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Message Input */}
+        {selectedChatId && (
+          <MessageInput
+            onSendMessage={handleSendMessage}
+            disabled={isLoading}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default App ; 

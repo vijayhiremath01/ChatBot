@@ -1,0 +1,32 @@
+{
+  "name": "Message",
+  "type": "object",
+  "properties": {
+    "chat_id": {
+      "type": "string",
+      "description": "ID of the chat this message belongs to"
+    },
+    "content": {
+      "type": "string",
+      "description": "Message content"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "user",
+        "assistant"
+      ],
+      "description": "Who sent the message"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the message was sent"
+    }
+  },
+  "required": [
+    "chat_id",
+    "content",
+    "role"
+  ]
+}
