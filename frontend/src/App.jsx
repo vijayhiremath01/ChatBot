@@ -50,7 +50,7 @@ function App() {
       setMessages(prev => [...prev, userMessage]);
 
       // Simple fetch with no extra options
-      fetch('http://127.0.0.1:5000/ask', {
+      fetch('http://127.0.0.1:5001/ask', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query: content })
