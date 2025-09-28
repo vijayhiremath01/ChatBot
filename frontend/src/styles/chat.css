@@ -5,16 +5,16 @@
   --color-primary-hover: #242426;
   --color-primary-light: #3a3a3c;
   
-  --color-text-primary: #e2e2e2;
-  --color-text-secondary: #b0b0b0;
-  --color-text-muted: #8a8a8a;
+  --color-text-primary: #f8f8f8;
+  --color-text-secondary: #c8c8c8;
+  --color-text-muted: #a0a0a0;
   --color-text-inverse: #ffffff;
   
-  --color-bg-primary: #1a1a1c;
-  --color-bg-secondary: #242426;
-  --color-bg-tertiary: #2e2e30;
-  --color-bg-message-user: #3a3a3c;
-  --color-bg-message-ai: #2e2e30;
+  --color-bg-primary: #0a0a0c;
+  --color-bg-secondary: #101012;
+  --color-bg-tertiary: #161618;
+  --color-bg-message-user: #1a1a1c;
+  --color-bg-message-ai: #121214;
   
   --color-border: #3a3a3c;
   --color-border-light: #2e2e30;
@@ -50,8 +50,8 @@
   --transition-slow: 300ms ease-in-out;
   
   /* Glass Effect */
-  --glass-bg: rgba(46, 46, 48, 0.6);
-  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-bg: rgba(18, 18, 20, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.05);
   --glass-blur: 10px;
 }
 

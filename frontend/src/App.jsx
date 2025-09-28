@@ -49,11 +49,18 @@ function App() {
       
       setMessages(prev => [...prev, userMessage]);
 
-      // Simulate AI response
-      setTimeout(async () => {
+      // Simple fetch with no extra options
+      fetch('http://127.0.0.1:5000/ask', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: content })
+      })
+      .then(response => response.json())
+      .then(async (data) => {
+        // Create AI message with response from backend
         const aiMessage = await Message.create({
           chat_id: selectedChatId,
-          content: `This is a simulated response to: "${content}"`,
+          content: data.answer,
           role: 'assistant'
         });
         
@@ -64,10 +71,21 @@ function App() {
           last_message: content,
           message_count: messages.length + 2
         });
+      })
+      .catch(async (error) => {
+        console.error('Error connecting to backend:', error);
+        // Create error message if backend connection fails
+        const errorMessage = await Message.create({
+          chat_id: selectedChatId,
+          content: "Sorry, I couldn't connect to the knowledge base. Please try again later.",
+          role: 'assistant'
+        });
         
+        setMessages(prev => [...prev, errorMessage]);
+      })
+      .finally(() => {
         setIsLoading(false);
-      }, 1000);
-      
+      });
     } catch (error) {
       console.error('Failed to send message:', error);
       setIsLoading(false);
@@ -154,4 +172,4 @@ function App() {
   );
 }
 
-export default App ; 
+export default App ;

@@ -187,12 +187,14 @@ export default function ChatSidebar({
               >
                 <Plus className="w-4 h-4" />
               </button>
-              <button
-                onClick={onClose}
-                className="sidebar-button sidebar-button--secondary"
-              >
-                <X className="w-4 h-4" />
-              </button>
+              {isOpen && (
+                <button
+                  onClick={onClose}
+                  className="sidebar-button sidebar-button--secondary"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
             </div>
           </div>
 
