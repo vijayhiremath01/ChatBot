@@ -8,10 +8,10 @@ import { Button } from "@/components/ui/button";
 import { Menu, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-import ChatSidebar from "../components/chat/ChatSidebar";
-import MessageBubble from "../components/chat/MessageBubble";
-import MessageInput from "../components/chat/MessageInput";
-import SearchButton from "../components/chat/SearchButton";
+import ChatSidebar from "../Components/chat/ChatSidebar";
+import MessageBubble from "../Components/chat/MessageBubble";
+import MessageInput from "../Components/chat/MessageInput";
+import SearchButton from "../Components/chat/SearchButton";
 
 export default function ChatPage() {
   const [selectedChat, setSelectedChat] = useState(null);

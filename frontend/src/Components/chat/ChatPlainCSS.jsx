@@ -1,5 +1,5 @@
 import React from 'react';
-import { Send, Paperclip, Smile, Plus } from 'lucide-react';
+import { Send, Paperclip, Smile, Plus, Bot } from 'lucide-react';
 import '../../styles/chat.css';
 
 export default function ChatPlainCSS({
@@ -31,7 +31,9 @@ export default function ChatPlainCSS({
       {/* Header */}
       <header className="chat-header">
         <div className="chat-header-content">
-          <div className="chat-avatar">AI</div>
+          <div className="chat-avatar">
+            <Bot className="w-4 h-4" />
+          </div>
           <div>
             <h1 className="chat-title">znozx</h1>
             <p className="chat-subtitle">AI Budyy</p>
@@ -51,7 +53,9 @@ export default function ChatPlainCSS({
         {messages.length === 0 ? (
           <div className="chat-empty">
             <div className="chat-empty-content">
-              <div className="chat-empty-avatar">AI</div>
+              <div className="chat-empty-avatar">
+                <Bot className="w-5 h-5" />
+              </div>
               <h2 className="chat-empty-title">How can I help you today?</h2>
               <p className="chat-empty-subtitle">
                 Start a conversation by typing a message below.

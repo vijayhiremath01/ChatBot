@@ -92,16 +92,6 @@ GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
 GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
 GEMINI_API_VERSION = os.environ.get("GEMINI_API_VERSION", "v1")
 
-SYSTEM_PROMPT = """
-You are a helpful AI assistant. When answering, follow this structure:
-
-1. Provide a **short summary** (1-2 sentences) at the beginning.
-2. Include **3-5 key points** as a bullet list.
-3. Provide a **concise example** if applicable.
-4. Use Markdown formatting with headings, bold, and bullet points.
-5. Keep answers clear, concise, and readable.
-"""
-
 def call_gemini(query: str) -> str:
     if not GEMINI_API_KEY:
         return "Gemini API key not configured. Set GEMINI_API_KEY in environment."
@@ -109,28 +99,67 @@ def call_gemini(query: str) -> str:
     model = os.environ.get("GEMINI_MODEL", GEMINI_MODEL)
     version = os.environ.get("GEMINI_API_VERSION", GEMINI_API_VERSION)
 
-    payload = {
-        "prompt": f"{SYSTEM_PROMPT}\nUser: {query}\nAssistant:",
-        "temperature": 0.7,
-        "candidate_count": 1,
-        "top_p": 0.95,
-        "top_k": 40
-    }
-
-    url = f"https://generativelanguage.googleapis.com/{version}/models/{model}:generateText?key={GEMINI_API_KEY}"
+    def generate(model_name: str):
+        url = (
+            f"https://generativelanguage.googleapis.com/{version}/models/"
+            f"{model_name}:generateContent?key={GEMINI_API_KEY}"
+        )
+        payload = {"contents": [{"role": "user", "parts": [{"text": query}]}]}
+        return requests.post(url, json=payload, timeout=20)
 
     try:
-        res = requests.post(url, json=payload, timeout=20)
+        res = generate(model)
+
+        # If model not found for this API version, try '-latest' suffix once
+        if res.status_code == 404 and not model.endswith("-latest"):
+            alt_model = f"{model}-latest"
+            res = generate(alt_model)
+
         if res.status_code == 200:
             data = res.json()
             text = (
                 data.get("candidates", [{}])[0]
-                .get("content", "")
+                .get("content", {})
+                .get("parts", [{}])[0]
+                .get("text", "")
             )
             return text or "(empty response)"
+
+        if res.status_code == 404:
+            # Fetch available models to guide the user
+            list_url = (
+                f"https://generativelanguage.googleapis.com/{version}/models?key={GEMINI_API_KEY}"
+            )
+            lm = requests.get(list_url, timeout=10)
+            available = []
+            if lm.status_code == 200:
+                items = lm.json().get("models", [])
+                available = [m.get("name", "") for m in items][:8]
+            return (
+                f"Gemini API error: 404 - model '{model}' not found for {version}. "
+                f"Available: {', '.join(available) if available else 'unknown'}"
+            )
+
         return f"Gemini API error: {res.status_code} - {res.text}"
     except Exception as e:
         return f"Error contacting Gemini API: {str(e)}"
+
+@app.route("/models", methods=["GET"])
+def list_models():
+    if not GEMINI_API_KEY:
+        return jsonify({"error": "GEMINI_API_KEY not set"}), 400
+    version = os.environ.get("GEMINI_API_VERSION", GEMINI_API_VERSION)
+    url = f"https://generativelanguage.googleapis.com/{version}/models?key={GEMINI_API_KEY}"
+    r = requests.get(url, timeout=10)
+    return jsonify(r.json()), r.status_code
+
+# ------------------- Optional: Strip Markdown ------------------- #
+def strip_markdown(md_text):
+    text = re.sub(r"#.*\n", "", md_text)
+    text = re.sub(r"(\*\*|__|\*|_)", "", text)
+    text = re.sub(r"\$.*?\$", "", text)
+    text = re.sub(r"\[([^\]]+)\]\([^\)]+\)", r"\1", text)
+    return text.strip()
 
 # ------------------- API Endpoint ------------------- #
 @app.route("/ask", methods=["POST"])
@@ -155,6 +184,8 @@ def ask():
 
     # 3) Gemini fallback
     gemini_answer = call_gemini(query)
+    # Optionally strip Markdown for plain text
+    # gemini_answer = strip_markdown(gemini_answer)
     return jsonify({
         "answer": gemini_answer,
         "meta": {"type": "gemini_fallback"}

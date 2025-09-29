@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Bot } from 'lucide-react';
 import { ChatSidebar, SearchButton, MessageBubble, MessageInput } from './Components/chat';
 import { Message } from './entities/Message.js';
 import { Chat } from './entities/Chat.js';
@@ -8,6 +9,12 @@ function App() {
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const messagesEndRef = useRef(null);
+
+  // Auto-scroll to the latest message whenever messages change
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   const handleNewChat = async () => {
     try {
@@ -111,7 +118,9 @@ function App() {
         <div className="app-header">
           <SearchButton onClick={() => setSidebarOpen(!sidebarOpen)} />
           <div className="app-header-content">
-            <div className="app-header-avatar">AI</div>
+            <div className="app-header-avatar">
+              <Bot className="w-4 h-4" />
+            </div>
             <div>
               <h1 className="app-header-title">znozx</h1>
               <p className="app-header-subtitle">
@@ -156,6 +165,8 @@ function App() {
                   </div>
                 </div>
               )}
+              {/* Anchor ensures smooth scroll to bottom */}
+              <div ref={messagesEndRef} />
             </div>
           )}
         </div>
