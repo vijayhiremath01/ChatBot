@@ -1,15 +1,12 @@
-
 import React, { useState, useEffect } from "react";
 import { Chat } from "@/entities/Chat.js";
 import { Message } from "@/entities/Message.js";
-
 import {
   Search,
   Plus,
   MessageSquare,
   Calendar,
   Trash2,
-  MoreHorizontal,
   X
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -46,23 +43,13 @@ export default function ChatSidebar({
 
   const handleDeleteChat = async (chat) => {
     try {
-      // Delete all messages in the chat first
       const messages = await Message.filter({ chat_id: chat.id });
       for (const message of messages) {
         await Message.delete(message.id);
       }
-
-      // Delete the chat
       await Chat.delete(chat.id);
-
-      // Update local state
       setChats(prevChats => prevChats.filter(c => c.id !== chat.id));
-
-      // If the deleted chat was selected, clear selection
-      if (selectedChatId === chat.id) {
-        onChatSelect(null);
-      }
-
+      if (selectedChatId === chat.id) onChatSelect(null);
       setDeleteDialogOpen(false);
       setChatToDelete(null);
     } catch (error) {
@@ -82,26 +69,14 @@ export default function ChatSidebar({
   );
 
   const groupChatsByDate = (chats) => {
-    const groups = {
-      today: [],
-      yesterday: [],
-      week: [],
-      older: []
-    };
-
+    const groups = { today: [], yesterday: [], week: [], older: [] };
     chats.forEach(chat => {
       const chatDate = new Date(chat.updated_date);
-      if (isToday(chatDate)) {
-        groups.today.push(chat);
-      } else if (isYesterday(chatDate)) {
-        groups.yesterday.push(chat);
-      } else if (Date.now() - chatDate.getTime() < 7 * 24 * 60 * 60 * 1000) {
-        groups.week.push(chat);
-      } else {
-        groups.older.push(chat);
-      }
+      if (isToday(chatDate)) groups.today.push(chat);
+      else if (isYesterday(chatDate)) groups.yesterday.push(chat);
+      else if (Date.now() - chatDate.getTime() < 7 * 24 * 60 * 60 * 1000) groups.week.push(chat);
+      else groups.older.push(chat);
     });
-
     return groups;
   };
 
@@ -153,7 +128,6 @@ export default function ChatSidebar({
 
   const ChatGroup = ({ title, chats }) => {
     if (chats.length === 0) return null;
-
     return (
       <div className="sidebar-group">
         <h3 className="sidebar-group-title">{title}</h3>
@@ -284,4 +258,3 @@ export default function ChatSidebar({
     </>
   );
 }
-
