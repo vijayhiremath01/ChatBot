@@ -1,6 +1,7 @@
-Flask
-Flask-Cors
-rapidfuzz
-PyYAML
-requests
-gunicorn
+Flask==2.3.3
+Flask-Cors==4.0.0
+rapidfuzz==3.6.1
+PyYAML==6.0.1
+requests==2.31.0
+gunicorn==21.2.0
+python-dotenv==1.0.0
