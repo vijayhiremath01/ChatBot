@@ -2,4 +2,5 @@ Flask
 Flask-Cors
 rapidfuzz
 PyYAML
- requests
+requests
+gunicorn
