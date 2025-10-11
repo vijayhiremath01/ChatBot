@@ -2,8 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { Chat } from "@/entities/Chat.js";
 import { Message } from "@/entities/Message.js";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+
 import {
   Search,
   Plus,
