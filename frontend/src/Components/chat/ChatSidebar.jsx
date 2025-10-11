@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Chat } from "@/entities/Chat.js";
 import { Message } from "@/entities/Message.js";
+// Removed Button and Input imports
 import {
   Search,
   Plus,
   MessageSquare,
   Calendar,
   Trash2,
+  MoreHorizontal,
   X
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
