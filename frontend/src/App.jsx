@@ -6,7 +6,11 @@ import { Chat } from './entities/Chat.js';
 
 function App() {
   const [selectedChatId, setSelectedChatId] = useState(null);
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState(() => {
+    // Load messages from localStorage on initial render
+    const savedMessages = localStorage.getItem('chatMessages');
+    return savedMessages ? JSON.parse(savedMessages) : [];
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const messagesEndRef = useRef(null);
@@ -14,6 +18,9 @@ function App() {
   // Auto-scroll to the latest message whenever messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    
+    // Save messages to localStorage whenever they change
+    localStorage.setItem('chatMessages', JSON.stringify(messages));
   }, [messages]);
 
   const handleNewChat = async () => {
@@ -56,11 +63,19 @@ function App() {
       
       setMessages(prev => [...prev, userMessage]);
 
-      // Connect to the deployed backend on Render
+      // Connect to the deployed backend on Render with message history
+      const messageHistory = messages.map(msg => ({
+        role: msg.role,
+        content: msg.content
+      }));
+      
       fetch('https://znozx-ai-backend.onrender.com/ask', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: content })
+        body: JSON.stringify({ 
+          query: content,
+          history: messageHistory 
+        })
       })
       .then(response => response.json())
       .then(async (data) => {

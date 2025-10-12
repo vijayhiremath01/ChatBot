@@ -1,11 +1,30 @@
-# React + Vite
+# ChatBot Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the frontend for the ChatBot project, built with React and Vite.
 
-Currently, two official plugins are available:
+## Setup Instructions
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Prerequisites
+- Node.js 14 or higher
+- npm or yarn
+
+### Installation
+
+1. Install dependencies:
+```bash
+npm install
+# or
+yarn
+```
+
+2. Start the development server:
+```bash
+npm run dev
+# or
+yarn dev
+```
+
+The application will be available at http://localhost:5173
 
 ## React Compiler
 
