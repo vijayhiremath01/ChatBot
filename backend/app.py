@@ -11,7 +11,7 @@ load_dotenv()
 
 # ------------------- ENV CONFIG ------------------- #
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
-GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-1.5-flash")
+GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.0-flash")
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")  # optional fallback
 PORT = int(os.environ.get("PORT", "5001"))
 
@@ -36,14 +36,16 @@ IMPORTANT:
     
     # For Gemini, we need to add this as a user message at the beginning since it doesn't support system messages the same way
     contents.append({"role": "user", "parts": [{"text": system_prompt}]})
-    contents.append({"role": "assistant", "parts": [{"text": "I understand. I'll remember all user information and never give generic AI responses."}]})
+    contents.append({"role": "model", "parts": [{"text": "I understand. I'll remember all user information and never give generic AI responses."}]})
     
     # Add message history if provided
     if history and isinstance(history, list):
         for msg in history:
             if isinstance(msg, dict) and 'role' in msg and 'content' in msg:
+                # Convert "assistant" role to "model" for Gemini
+                role = "model" if msg["role"] == "assistant" else msg["role"]
                 contents.append({
-                    "role": msg["role"],
+                    "role": role,
                     "parts": [{"text": msg["content"]}]
                 })
     
@@ -55,6 +57,7 @@ IMPORTANT:
     for attempt in range(3):  # retry up to 3 times
         try:
             res = requests.post(url, json=payload, timeout=60)
+            print(f"DEBUG: Gemini status code: {res.status_code}")
             if res.status_code == 200:
                 data = res.json()
                 candidates = data.get("candidates", [])
@@ -68,9 +71,13 @@ IMPORTANT:
                 time.sleep(2 * (attempt + 1))  # exponential backoff
                 continue
             else:
-                return f"❌ Gemini API error {res.status_code}: {res.text}"
+                error_msg = f"❌ Gemini API error {res.status_code}: {res.text}"
+                print(error_msg)
+                return error_msg
         except Exception as e:
-            return f"❌ Error contacting Gemini API: {str(e)}"
+            error_msg = f"❌ Error contacting Gemini API: {str(e)}"
+            print(error_msg)
+            return error_msg
 
     return None  # if all retries fail
 

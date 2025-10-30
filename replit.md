@@ -12,9 +12,11 @@ An intelligent AI chatbot application powered by Google's Gemini AI with OpenAI 
 - ✅ Configured for Replit environment
 - ✅ Updated Vite to run on port 5000 with host 0.0.0.0 and allowedHosts: true
 - ✅ Modified backend to use localhost on port 5001
-- ✅ Updated frontend to dynamically connect to local backend
+- ✅ Set up Vite proxy to forward /api/* requests to backend
 - ✅ Set up combined startup script for both services
 - ✅ Integrated Gemini API key through Replit Secrets
+- ✅ Fixed Gemini model from gemini-1.5-flash to gemini-2.0-flash
+- ✅ Fixed role mapping (assistant → model) for Gemini API
 - ✅ Created .gitignore for Python and Node.js
 - ✅ **Redesigned UI to minimal modern theme:**
   - Clean grey-black color scheme (#212121, #2a2a2a, #171717)

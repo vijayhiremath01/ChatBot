@@ -69,10 +69,8 @@ function App() {
         content: msg.content
       }));
       
-      // Use local backend in development, deployed backend in production
-      const backendUrl = window.location.hostname === 'localhost' 
-        ? 'http://localhost:5001/ask'
-        : `${window.location.protocol}//${window.location.hostname}:5001/ask`;
+      // Backend URL - use Vite proxy to forward to backend
+      const backendUrl = '/api/ask';
       
       fetch(backendUrl, {
         method: 'POST',
