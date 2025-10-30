@@ -63,13 +63,18 @@ function App() {
       
       setMessages(prev => [...prev, userMessage]);
 
-      // Connect to the deployed backend on Render with message history
+      // Connect to the backend with message history
       const messageHistory = messages.map(msg => ({
         role: msg.role,
         content: msg.content
       }));
       
-      fetch('https://znozx-ai-backend.onrender.com/ask', {
+      // Use local backend in development, deployed backend in production
+      const backendUrl = window.location.hostname === 'localhost' 
+        ? 'http://localhost:5001/ask'
+        : `${window.location.protocol}//${window.location.hostname}:5001/ask`;
+      
+      fetch(backendUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 

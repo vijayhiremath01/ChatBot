@@ -153,4 +153,4 @@ def list_models():
 # ------------------- Run Server ------------------- #
 if __name__ == "__main__":
     print(f"🚀 Starting server on http://localhost:{PORT}")
-    app.run(debug=True, port=PORT, host="0.0.0.0")
+    app.run(debug=True, port=PORT, host="localhost")
