@@ -1,6 +1,8 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import os, requests, time
+import os
+import requests
+import time
 from dotenv import load_dotenv
 
 app = Flask(__name__)
