@@ -17,9 +17,6 @@ export default defineConfig({
     hmr: {
       clientPort: 5000,
     },
-    allowedHosts: [
-      '.replit.dev',
-      '.repl.co',
-    ],
+    allowedHosts: true,
   },
 })
